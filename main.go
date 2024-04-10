@@ -22,7 +22,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	routes.UserRoutes(router)
+	routes.Routes(router)
 
 	router.Run(":" + port)
 }

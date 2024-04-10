@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -29,7 +28,7 @@ func GenerateToken(id primitive.ObjectID, firstname string, lastname string, ema
 		Email:      email,
 		MapClaims: jwt.MapClaims{
 			"iss": "Go Ecommerce",
-			"exp": time.Now().Local().Add(time.Hour * time.Duration(24)).Unix(),
+			"exp": time.Now().Local().Add(time.Hour * time.Duration(24*7)).Unix(),
 			"iat": time.Now().Local().Unix(),
 		},
 	}
@@ -42,7 +41,7 @@ func GenerateToken(id primitive.ObjectID, firstname string, lastname string, ema
 	return token, err
 }
 
-func ValidateToken2(tokenString string) (claims *SignedDetails, err error) {
+func ValidateToken(tokenString string) (claims *SignedDetails, err error) {
 	token, err := jwt.ParseWithClaims(tokenString, &SignedDetails{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(SECRET_KEY), nil
 	})
@@ -51,14 +50,9 @@ func ValidateToken2(tokenString string) (claims *SignedDetails, err error) {
 	}
 
 	claims, ok := token.Claims.(*SignedDetails)
-	fmt.Println("YOO1")
-	fmt.Println(claims)
-	fmt.Println(ok)
-	fmt.Println("YOOO")
 
 	if !ok || !token.Valid {
 		return nil, errors.New("invalid token")
 	}
 	return claims, nil
 }
-
