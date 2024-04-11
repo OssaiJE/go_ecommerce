@@ -41,18 +41,49 @@ func CreateProduct(c *gin.Context) {
 	c.JSON(http.StatusCreated, utilities.UserResponse{Status: http.StatusCreated, Message: "Product created!", Data: map[string]interface{}{"product_id": product_id}})
 }
 
-func GetOneProduct() {
+func GetOneProduct(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var product *models.Product
+	id := c.Param("id")
+	product_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Invalid product ID!"})
+		return
+	}
+	product, err = services.FindProductById(ctx, product_id)
+	defer cancel()
+
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "No product found!"})
+		return
+	}
+
+	c.JSON(http.StatusOK, utilities.UserResponse{Status: http.StatusOK, Message: "Product retrieved!", Data: map[string]interface{}{"product": product}})
 
 }
 
-func GetAllProducts() {
+func GetAllProducts(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var products []*models.Product
+
+	products, err := services.FindAllProducts(ctx)
+    if err != nil || len(products) < 1 {
+        log.Println(err, len(products))
+		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "No product found!"})
+		return
+    }
+    defer cancel()
+    c.JSON(http.StatusOK, utilities.UserResponse{Status: http.StatusOK, Message: "Products retrieved!", Data: map[string]interface{}{"products": products}})
+}
+
+func UpdateProduct(c *gin.Context) {
 
 }
 
-func UpdateProduct() {
-
-}
-
-func DeleteProduct() {
+func DeleteProduct(c *gin.Context) {
 
 }
