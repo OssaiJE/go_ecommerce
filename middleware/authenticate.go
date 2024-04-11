@@ -15,9 +15,8 @@ func Authenticate(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	// client_token = client_token[7:]
+    
 	claims, err := services.ValidateToken(client_token[7:])
-
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, utilities.UserResponse{Status: http.StatusUnauthorized, Message: "Invalid token!"})
 		c.Abort()

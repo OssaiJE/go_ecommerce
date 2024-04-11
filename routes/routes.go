@@ -11,11 +11,11 @@ func Routes(router *gin.Engine) {
     // Auth Routes
 	auth := router.Group("/auth")
 	auth.POST("/signup", controllers.SignUp)
-	auth.POST("/signin", middleware.Authenticate, controllers.SignIn)
+	auth.POST("/signin", controllers.SignIn)
     
     // Product Routes
 	product := router.Group("/product")
 	product.GET("/")
-	product.POST("/add")
+	product.POST("/create", middleware.Authenticate, controllers.CreateProduct)
 	product.GET("/search")
 }
