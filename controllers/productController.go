@@ -18,12 +18,8 @@ func CreateProduct(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var product models.Product
-	var user_id primitive.ObjectID
 	val, _ := c.Get("user_id")
-	if val != nil {
-		// Type assertion
-		user_id, _ = val.(primitive.ObjectID)
-	}
+	user_id, _ := val.(primitive.ObjectID) // Type assertion
 
 	if err := c.BindJSON(&product); err != nil {
 		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Bad request!", Data: map[string]interface{}{"data": err.Error()}})
@@ -88,12 +84,8 @@ func UpdateProduct(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var product *models.Product
-	var user_id primitive.ObjectID
 	val, _ := c.Get("user_id")
-	if val != nil {
-		// Type assertion
-		user_id, _ = val.(primitive.ObjectID)
-	}
+	user_id, _ := val.(primitive.ObjectID) // Type assertion
 	id := c.Param("id")
 	product_id, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -131,6 +123,37 @@ func UpdateProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, utilities.UserResponse{Status: http.StatusOK, Message: "Product updated!", Data: map[string]interface{}{"product": product}})
 }
 
+// DeleteProduct deletes a product based on the provided product ID and user ID
 func DeleteProduct(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	val, _ := c.Get("user_id")
+	user_id, _ := val.(primitive.ObjectID) // Type assertion
+	id := c.Param("id")
+	product_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Invalid product ID!"})
+		return
+	}
+    db_product, err := services.FindProductById(ctx, product_id)
+	defer cancel()
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "No product found!"})
+		return
+	}
+    if db_product.User_ID != user_id {
+		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Permission denied!"})
+		return
+	}
+    err = services.DeleteOneProduct(ctx, product_id, user_id)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Failed to delete product!"})
+		return
+	}
+	defer cancel()
 
+	c.JSON(http.StatusOK, utilities.UserResponse{Status: http.StatusOK, Message: "Product deleted!"})
 }

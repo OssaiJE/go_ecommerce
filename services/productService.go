@@ -57,3 +57,12 @@ func UpdateOneProduct(ctx context.Context, product_id primitive.ObjectID, user_i
 
 	return &updatedProduct, nil
 }
+
+func DeleteOneProduct(ctx context.Context, productID, userID primitive.ObjectID) error {
+	filter := bson.M{"_id": productID, "user_id": userID}
+	_, err := ProductCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}

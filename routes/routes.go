@@ -18,6 +18,7 @@ func Routes(router *gin.Engine) {
 	product.GET("/", controllers.GetAllProducts)
 	product.GET("/:id", controllers.GetOneProduct)
 	product.PATCH("/:id", middleware.Authenticate, controllers.UpdateProduct)
+	product.DELETE("/:id", middleware.Authenticate, controllers.DeleteProduct)
 	product.POST("/create", middleware.Authenticate, controllers.CreateProduct)
 	product.GET("/search")
 }
