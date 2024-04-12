@@ -35,9 +35,25 @@ func FindAllProducts(ctx context.Context) (products []*models.Product, err error
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx) 
+	defer cursor.Close(ctx)
 	if err := cursor.All(ctx, &products); err != nil {
 		return nil, err
 	}
 	return products, nil
+}
+
+func UpdateOneProduct(ctx context.Context, product_id primitive.ObjectID, user_id primitive.ObjectID, update *models.Product) (*models.Product, error) {
+	filter := bson.M{"_id": product_id, "user_id": user_id}
+	_, err := ProductCollection.UpdateOne(ctx, filter, bson.M{"$set": update})
+	if err != nil {
+		return nil, err
+	}
+	// Retrieve the updated product
+	var updatedProduct models.Product
+	err = ProductCollection.FindOne(ctx, filter).Decode(&updatedProduct)
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedProduct, nil
 }
