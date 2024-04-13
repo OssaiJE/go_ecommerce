@@ -82,18 +82,17 @@ func SignIn(c *gin.Context) {
 	defer cancel()
 	var user *models.User
 
-    //validate the request body
+	//validate the request body
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Bad request!"})
 		return
 	}
 
-
 	found_user, err := services.FindUserByEmail(ctx, user.Email)
 	defer cancel()
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Invalid login credentials!",})
+		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Invalid login credentials!"})
 		return
 	}
 

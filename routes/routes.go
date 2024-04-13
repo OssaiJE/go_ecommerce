@@ -8,12 +8,12 @@ import (
 )
 
 func Routes(router *gin.Engine) {
-    // Auth Routes
+	// Auth Routes
 	auth := router.Group("/auth")
 	auth.POST("/signup", controllers.SignUp)
 	auth.POST("/signin", controllers.SignIn)
-    
-    // Product Routes
+
+	// Product Routes
 	product := router.Group("/product")
 	product.GET("/", controllers.GetAllProducts)
 	product.GET("/:id", controllers.GetOneProduct)
@@ -21,4 +21,5 @@ func Routes(router *gin.Engine) {
 	product.DELETE("/:id", middleware.Authenticate, controllers.DeleteProduct)
 	product.POST("/create", middleware.Authenticate, controllers.CreateProduct)
 	product.GET("/search")
+	product.POST("/upload")
 }

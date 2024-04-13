@@ -157,3 +157,7 @@ func DeleteProduct(c *gin.Context) {
 
 	c.JSON(http.StatusOK, utilities.UserResponse{Status: http.StatusOK, Message: "Product deleted!"})
 }
+
+func UploadFile(c *gin.Context)  {
+    
+}
