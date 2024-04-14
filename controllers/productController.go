@@ -2,11 +2,15 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"go_ecommerce/models"
 	"go_ecommerce/services"
 	"go_ecommerce/utilities"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -136,18 +140,18 @@ func DeleteProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Invalid product ID!"})
 		return
 	}
-    db_product, err := services.FindProductById(ctx, product_id)
+	db_product, err := services.FindProductById(ctx, product_id)
 	defer cancel()
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "No product found!"})
 		return
 	}
-    if db_product.User_ID != user_id {
+	if db_product.User_ID != user_id {
 		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Permission denied!"})
 		return
 	}
-    err = services.DeleteOneProduct(ctx, product_id, user_id)
+	err = services.DeleteOneProduct(ctx, product_id, user_id)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, utilities.UserResponse{Status: http.StatusBadRequest, Message: "Failed to delete product!"})
@@ -158,6 +162,49 @@ func DeleteProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, utilities.UserResponse{Status: http.StatusOK, Message: "Product deleted!"})
 }
 
-func UploadFile(c *gin.Context)  {
-    
+func UploadFile(c *gin.Context) {
+	file, _ := c.FormFile("image")
+	log.Println(file.Filename)
+	dst := "uploads/"
+	os.MkdirAll(dst, os.ModePerm)
+	currentTime := time.Now().Local().Format("20060102150405.000000000") // Format: YYYYMMDDHHMMSS.nanoseconds
+	newFilename := currentTime + "_" + file.Filename
+	// Upload the file to the specific destination.
+	if err := c.SaveUploadedFile(file, dst+newFilename); err != nil {
+		log.Fatalf("Error saving file: %v", err)
+		c.String(http.StatusInternalServerError, "Failed to save file")
+		return
+	}
+
+	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", dst+newFilename))
+}
+
+func UploadFiles(c *gin.Context) {
+	form, _ := c.MultipartForm()
+	files := form.File["images"]
+	dst := "uploads/"
+	os.MkdirAll(dst, os.ModePerm)
+	allowedExtensions := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".pdf": true}
+	for _, file := range files {
+		// Check if the file extension is allowed
+		ext := strings.ToLower(filepath.Ext(file.Filename))
+		if !allowedExtensions[ext] {
+			c.String(http.StatusBadRequest, "Only image and PDF files are allowed")
+			return
+		}
+	}
+	for _, file := range files {
+
+		// Get the current time including nanoseconds
+		currentTime := time.Now().Local().Format("20060102150405.000000000") // Format: YYYYMMDDHHMMSS.000000000
+		filename := strings.ReplaceAll(strings.ToLower(file.Filename), " ", "_")
+		newFilename := currentTime + "_" + filename
+		if err := c.SaveUploadedFile(file, dst+newFilename); err != nil {
+			log.Fatalf("Error saving file: %v", err)
+			c.String(http.StatusInternalServerError, "Failed to save file")
+			return
+		}
+	}
+
+	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
 }
