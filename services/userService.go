@@ -41,7 +41,7 @@ func FindUserByEmail(ctx context.Context, email string) (user *models.User, err 
 	return user, nil
 }
 
-func UpdateUser(ctx context.Context, user_id primitive.ObjectID, update *models.User) (*models.User, error) {
+func UpdateUser(ctx context.Context, user_id primitive.ObjectID, update interface{}) (*models.User, error) {
 	filter := bson.M{"_id": user_id}
 	_, err := UserCollection.UpdateOne(ctx, filter, bson.M{"$set": update})
 	if err != nil {
