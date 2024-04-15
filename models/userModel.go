@@ -14,8 +14,7 @@ type User struct {
 	Password     string             `bson:"password,omitempty" json:"password" validate:"required,min=6,max=25"`
 	Phone_Number *string            `bson:"phone_number" json:"phone_number" validate:"min=9,max=17"`
 	// User_Type       string             `bson:"user_type" json:"user_type" validate:"required, eq=admin|eq=user"`
-	// Access_Token           *string       `bson:"access_token" json:"access_token"`
-	// Refresh_Token   *string       `bson:"refresh_token" json:"refresh_token"`
+    Image        *string             `json:"image,omitempty" bson:"image,omitempty"`
 	User_Cart       []ProductUser `json:"user_cart" bson:"user_cart"`
 	Address_Details []Address     `json:"address_details" bson:"address_details"`
 	Order_Status    []Order       `json:"order_status" bson:"order_status"`

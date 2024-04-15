@@ -13,6 +13,12 @@ func Routes(router *gin.Engine) {
 	auth.POST("/signup", controllers.SignUp)
 	auth.POST("/signin", controllers.SignIn)
 
+	// User Routes
+	user := router.Group("/user")
+	user.GET("/", controllers.GetUser)
+	user.PATCH("/update", middleware.Authenticate, controllers.UpdateUser)
+	user.PATCH("/photo", middleware.Authenticate, controllers.UpdateProfilePhoto)
+
 	// Product Routes
 	product := router.Group("/product")
 	product.GET("/", controllers.GetAllProducts)

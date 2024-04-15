@@ -6,6 +6,7 @@ import (
 	"go_ecommerce/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -38,4 +39,20 @@ func FindUserByEmail(ctx context.Context, email string) (user *models.User, err 
 		return nil, err
 	}
 	return user, nil
+}
+
+func UpdateUser(ctx context.Context, user_id primitive.ObjectID, update *models.User) (*models.User, error) {
+	filter := bson.M{"_id": user_id}
+	_, err := UserCollection.UpdateOne(ctx, filter, bson.M{"$set": update})
+	if err != nil {
+		return nil, err
+	}
+	// Retrieve the updated User
+	var updatedUser models.User
+	err = UserCollection.FindOne(ctx, filter).Decode(&updatedUser)
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedUser, nil
 }
