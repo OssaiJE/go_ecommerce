@@ -162,22 +162,6 @@ func DeleteProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, utilities.UserResponse{Status: http.StatusOK, Message: "Product deleted!"})
 }
 
-func UploadFile(c *gin.Context) {
-	file, _ := c.FormFile("image")
-	log.Println(file.Filename)
-	dst := "uploads/"
-	os.MkdirAll(dst, os.ModePerm)
-	currentTime := time.Now().Local().Format("20060102150405.000000000") // Format: YYYYMMDDHHMMSS.nanoseconds
-	newFilename := currentTime + "_" + file.Filename
-	// Upload the file to the specific destination.
-	if err := c.SaveUploadedFile(file, dst+newFilename); err != nil {
-		log.Fatalf("Error saving file: %v", err)
-		c.String(http.StatusInternalServerError, "Failed to save file")
-		return
-	}
-
-	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", dst+newFilename))
-}
 
 func UploadFiles(c *gin.Context) {
 	form, _ := c.MultipartForm()

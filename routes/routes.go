@@ -15,7 +15,7 @@ func Routes(router *gin.Engine) {
 
 	// User Routes
 	user := router.Group("/user")
-	user.GET("/", controllers.GetUser)
+	user.GET("/", middleware.Authenticate, controllers.GetUser)
 	user.PATCH("/update", middleware.Authenticate, controllers.UpdateUser)
 	user.PATCH("/photo", middleware.Authenticate, controllers.UpdateProfilePhoto)
 
@@ -27,6 +27,5 @@ func Routes(router *gin.Engine) {
 	product.DELETE("/:id", middleware.Authenticate, controllers.DeleteProduct)
 	product.POST("/create", middleware.Authenticate, controllers.CreateProduct)
 	product.GET("/search")
-	product.POST("/upload", controllers.UploadFile)
 	product.POST("/uploads", controllers.UploadFiles)
 }
