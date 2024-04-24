@@ -27,5 +27,5 @@ func Routes(router *gin.Engine) {
 	product.DELETE("/:id", middleware.Authenticate, controllers.DeleteProduct)
 	product.POST("/create", middleware.Authenticate, controllers.CreateProduct)
 	product.GET("/search")
-	product.POST("/uploads", controllers.UploadFiles)
+	// product.POST("/uploads", controllers.UploadFiles)
 }

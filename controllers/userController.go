@@ -31,6 +31,7 @@ func UpdateUser(c *gin.Context) {
 	defer cancel()
 	val, _ := c.Get("user_id")
 	user_id, _ := val.(primitive.ObjectID) // Type assertion
+    // TODO
 }
 
 func UpdateProfilePhoto(c *gin.Context) {

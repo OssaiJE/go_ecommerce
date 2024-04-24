@@ -2,15 +2,11 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"go_ecommerce/models"
 	"go_ecommerce/services"
 	"go_ecommerce/utilities"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -162,33 +158,32 @@ func DeleteProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, utilities.UserResponse{Status: http.StatusOK, Message: "Product deleted!"})
 }
 
+// func UploadFiles(c *gin.Context) {
+// 	form, _ := c.MultipartForm()
+// 	files := form.File["images"]
+// 	dst := "uploads/"
+// 	os.MkdirAll(dst, os.ModePerm)
+// 	allowedExtensions := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".pdf": true}
+// 	for _, file := range files {
+// 		// Check if the file extension is allowed
+// 		ext := strings.ToLower(filepath.Ext(file.Filename))
+// 		if !allowedExtensions[ext] {
+// 			c.String(http.StatusBadRequest, "Only image and PDF files are allowed")
+// 			return
+// 		}
+// 	}
+// 	for _, file := range files {
 
-func UploadFiles(c *gin.Context) {
-	form, _ := c.MultipartForm()
-	files := form.File["images"]
-	dst := "uploads/"
-	os.MkdirAll(dst, os.ModePerm)
-	allowedExtensions := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".pdf": true}
-	for _, file := range files {
-		// Check if the file extension is allowed
-		ext := strings.ToLower(filepath.Ext(file.Filename))
-		if !allowedExtensions[ext] {
-			c.String(http.StatusBadRequest, "Only image and PDF files are allowed")
-			return
-		}
-	}
-	for _, file := range files {
+// 		// Get the current time including nanoseconds
+// 		currentTime := time.Now().Local().Format("20060102150405.000000000") // Format: YYYYMMDDHHMMSS.000000000
+// 		filename := strings.ReplaceAll(strings.ToLower(file.Filename), " ", "_")
+// 		newFilename := currentTime + "_" + filename
+// 		if err := c.SaveUploadedFile(file, dst+newFilename); err != nil {
+// 			log.Fatalf("Error saving file: %v", err)
+// 			c.String(http.StatusInternalServerError, "Failed to save file")
+// 			return
+// 		}
+// 	}
 
-		// Get the current time including nanoseconds
-		currentTime := time.Now().Local().Format("20060102150405.000000000") // Format: YYYYMMDDHHMMSS.000000000
-		filename := strings.ReplaceAll(strings.ToLower(file.Filename), " ", "_")
-		newFilename := currentTime + "_" + filename
-		if err := c.SaveUploadedFile(file, dst+newFilename); err != nil {
-			log.Fatalf("Error saving file: %v", err)
-			c.String(http.StatusInternalServerError, "Failed to save file")
-			return
-		}
-	}
-
-	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
-}
+// 	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
+// }
